@@ -117,3 +117,8 @@ def annotate_document(document):
 
     return sent_segmentations, pos_annotations, lemma_annotations, depparse_annotations, ner_annotations
     
+nlp = stanza.Pipeline(lang='en', processors='tokenize')
+doc = nlp('This is a test sentence for stanza. This is another sentence.')
+for i, sentence in enumerate(doc.sentences):
+    print(f'====== Sentence {i+1} tokens =======')
+    print(*[f'id: {token.id}\ttext: {token.text}\tstart_char: {token.start_char}\tend_char: {token.end_char}' for token in sentence.tokens], sep='\n')
