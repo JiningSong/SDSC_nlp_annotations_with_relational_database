@@ -1,13 +1,14 @@
 import stanza
 import json
+import string
 
 
 SAMPLE_SENTENCE = "This is a test sentence for stanze. "
 SAMPLE_SENTENCES = "This is a test sentence for stanze. This is another sentence."
 SAMPLE_SENTENCE_NER = "Chris Manning teaches at Stanford University. He lives in the Bay Area."
+DATA_FILE = "/Users/jining/Projects/FMP/stanford_core_nlp_demo/newsExample.csv"
 
-
-def build_pipeline(text):
+def annotate_text(text):
     tokeniser = stanza.Pipeline(lang='en', processors='tokenize,pos,lemma,depparse, ner', logging_level='WARN')
     return tokeniser(text)
 
@@ -16,16 +17,31 @@ def build_pipeline(text):
 def generate_sent_segmentations(document):
     sent_segmentations = []
     for sent in document.sentences:
-        sent_segmentation = []
-        for el in sent.to_dict():
-            sent_segmentation_dict = {
-                "id": el['id'],
-                "text": el["text"],
-                "misc": el["misc"]
-            }
-            sent_segmentation.append(sent_segmentation_dict)
+        sent_segmentation = {}
+        sent_segmentation['start_char'] = sent.tokens[0].start_char
+        sent_segmentation['end_char'] = sent.tokens[-1].end_char
+        sent_segmentation['sentence_text'] = ""
+        
+        for token in sent.tokens:
+            if token.text in string.punctuation:
+                sent_segmentation['sentence_text'] += token.text
+            else:
+                sent_segmentation['sentence_text'] += ' ' + token.text
+        sent_segmentation['sentence_text'] = sent_segmentation['sentence_text'][1:]
         sent_segmentations.append(sent_segmentation)
-    return json.dumps(sent_segmentations)
+        
+    return sent_segmentations
+    #         sent_segmentation_dict = {
+    #             "id": word.id,
+    #             "text": word.,
+    #             "misc": el["misc"]
+    #         }
+    #         sent_segmentation.append(sent_segmentation_dict)
+    #     sent_segmentations.append(sent_segmentation)
+    
+    # for sent in sent_segmentations:
+
+    # return json.dumps(sent_segmentations)
 
 
 # Generate POS and Morphological result
@@ -106,19 +122,21 @@ def generate_ner_annotations(document):
 
 
 # Annotate document with 5 stanfor coreNLP tools
-def annotate_document(document):
+# def annotate_document(document):
 
-    document = build_pipeline(document)
-    sent_segmentations = generate_sent_segmentations(document)
-    pos_annotations = generate_pos_annotations(document)
-    lemma_annotations = generate_lemma_annotations(document)
-    depparse_annotations = generate_depparse_annotations(document)
-    ner_annotations = generate_ner_annotations(document)
+#     document = build_pipeline(document)
+#     sent_segmentations = generate_sent_segmentations(document)
+#     pos_annotations = generate_pos_annotations(document)
+#     lemma_annotations = generate_lemma_annotations(document)
+#     depparse_annotations = generate_depparse_annotations(document)
+#     ner_annotations = generate_ner_annotations(document)
 
-    return sent_segmentations, pos_annotations, lemma_annotations, depparse_annotations, ner_annotations
+#     return sent_segmentations, pos_annotations, lemma_annotations, depparse_annotations, ner_annotations
     
-nlp = stanza.Pipeline(lang='en', processors='tokenize')
-doc = nlp('This is a test sentence for stanza. This is another sentence.')
-for i, sentence in enumerate(doc.sentences):
-    print(f'====== Sentence {i+1} tokens =======')
-    print(*[f'id: {token.id}\ttext: {token.text}\tstart_char: {token.start_char}\tend_char: {token.end_char}' for token in sentence.tokens], sep='\n')
+
+
+# nlp = stanza.Pipeline(lang='en', processors='tokenize')
+# doc = nlp('This is a test sentence for stanza. This is another sentence.')
+# for i, sentence in enumerate(doc.sentences):
+#     print(f'====== Sentence {i+1} tokens =======')
+#     print(*[f'id: {token.id}\ttext: {token.text}\tstart_char: {token.start_char}\tend_char: {token.end_char}' for token in sentence.tokens], sep='\n')
