@@ -73,3 +73,37 @@ class Token:
 
     def to_ner_data(self):
         return (self.doc_id, self.sentence_id, self.token_id, self.token_text, self.ner, self.start_char, self.end_char)
+
+class Annotation:
+    def __init__(self, depparse_annotation, ner_annotation, pos_annotation, vocabulary_id):
+
+        self.doc_id = depparse_annotation[0]
+        self.sent_id = depparse_annotation[1]
+        self.token_id = depparse_annotation[2]
+        self.token_text_id = vocabulary_id
+        self.start_char = depparse_annotation[4]
+        self.end_char = depparse_annotation[5]
+        self.head_id = depparse_annotation[6]
+        self.head_text = depparse_annotation[7]
+        self.dependency_relation = depparse_annotation[8]
+        self.entity_type = ner_annotation[4]
+        self.upos = pos_annotation[6]
+        self.xpos = pos_annotation[7]
+        self.feats = pos_annotation[8]
+
+    def to_db_data(self):
+        return (
+            self.doc_id,
+            self.sent_id,
+            self.token_id,
+            self.token_text_id,
+            self.start_char,
+            self.end_char,
+            self.head_id,
+            self.head_text,
+            self.dependency_relation,
+            self.entity_type,
+            self.upos,
+            self.xpos,
+            self.feats,
+        )

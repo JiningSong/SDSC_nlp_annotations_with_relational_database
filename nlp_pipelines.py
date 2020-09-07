@@ -3,10 +3,8 @@ import json
 import string
 
 
-SAMPLE_SENTENCE = "This is a test sentence for stanze. "
-SAMPLE_SENTENCES = "This is a test sentence for stanze. This is another sentence."
-SAMPLE_SENTENCE_NER = "Chris Manning teaches at Stanford University. He lives in the Bay Area."
 DATA_FILE = "/Users/jining/Projects/FMP/stanford_core_nlp_demo/newsExample.csv"
+
 
 def generate_document(text):
     tokeniser = stanza.Pipeline(lang='en', processors='tokenize,pos,lemma,depparse, ner', logging_level='WARN')
