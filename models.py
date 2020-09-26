@@ -1,6 +1,5 @@
 import psycopg2
-from nlp_pipelines import *
-
+import random
 
 class Document:
     def __init__(self, text, doc_id=0):
@@ -17,10 +16,10 @@ class Document:
 class Sentence:
     def __init__(self, doc_id, sentence_text, start_char, end_char):
         self.doc_id = doc_id
+        self.sentence_id = random.randint(0,10**16) 
         self.sentence_text = sentence_text
         self.start_char = start_char
         self.end_char = end_char
-        self.sentence_id = 0
     
     def set_sentence_id(self, sentence_id):
         self.sentence_id = sentence_id
@@ -28,6 +27,7 @@ class Sentence:
     def to_db_data(self):
         return (
             self.doc_id,
+            self.sentence_id,
             self.sentence_text,
             self.start_char,
             self.end_char
@@ -61,6 +61,7 @@ class Token:
 
         # Memebr fields for NER
         self.ner = annotation_dict['ner']
+
     
     def to_lemma_data(self):
         return (self.doc_id, self.sentence_id, self.token_id, self.token_text, self.start_char, self.end_char, self.lemma)
@@ -74,11 +75,17 @@ class Token:
     def to_ner_data(self):
         return (self.doc_id, self.sentence_id, self.token_id, self.token_text, self.ner, self.start_char, self.end_char)
 
+    def to_annotations_data(self):
+        return (self.doc_id, self.sentence_id, self.token_id, self.token_text, self.start_char, self.end_char, self.head_id, self.head_text, self.dependency_relation, self.ner, self.upos, self.xpos, self.feats)
+
+    def to_annotation(self, db):
+        return Annotation(self, db)
+        
 class Annotation:
     def __init__(self, depparse_annotation, ner_annotation, pos_annotation, vocabulary_id):
 
         self.doc_id = depparse_annotation[0]
-        self.sent_id = depparse_annotation[1]
+        self.sentence_id = depparse_annotation[1]
         self.token_id = depparse_annotation[2]
         self.token_text_id = vocabulary_id
         self.start_char = depparse_annotation[4]
@@ -91,10 +98,27 @@ class Annotation:
         self.xpos = pos_annotation[7]
         self.feats = pos_annotation[8]
 
+    def __init__(self, token, db):
+        self.doc_id = token.doc_id
+        self.sentence_id = token.sentence_id
+        self.token_id = token.token_id
+        self.token_text_id = db.token_text_to_id(token.token_text)
+        self.start_char = token.start_char
+        self.end_char = token.end_char
+        self.head_id = token.head_id
+        self.head_text = token.head_text
+        self.dependency_relation = token.dependency_relation
+        self.entity_type = token.ner
+        self.upos = token.upos
+        self.xpos = token.xpos
+        self.feats = token.feats
+        self.appendix = db.augment_gpe_entity(token)
+
+
     def to_db_data(self):
         return (
             self.doc_id,
-            self.sent_id,
+            self.sentence_id,
             self.token_id,
             self.token_text_id,
             self.start_char,
@@ -106,4 +130,5 @@ class Annotation:
             self.upos,
             self.xpos,
             self.feats,
+            self.appendix
         )

@@ -1,11 +1,12 @@
-from models import *
-from db import *
+from nlp_pipelines import tokenize_document, annotate_document
+from models import Token, Sentence, Document
+from db import Database
 from tqdm import tqdm
 import pandas as pd
 import json
 import multiprocessing as mp
-import hashlib
 import stanza
+import time
 
 
 # Download specific processors from stanza library
@@ -25,13 +26,11 @@ def get_documents_from_csv(filepath):
 
 """
     Function:       Read_json
-    Description:    Read JSON file from disk. Each data record is stored as a dictionary entry with 
+    Description:    Read JSON file from disk. Each data record is stored as a dictionary entry with
                     two fields: id and news in the memory
     Arguments:      filepath[string] - absolute path to JSON file
     Return:         documents_list - list of dictionaries that stores id and news from each record in JSON
 """
-
-
 def read_json(filepath):
     documents_list = []
     with open(filepath) as f:
@@ -54,82 +53,66 @@ def read_json(filepath):
     Arguments:      documents_list[list of documents] - raw document data stored in list of dictionaries
     Return:         documents - list of document objects
 """
-
-
 def create_documents(documents_list):
     documents = []
+    doc_id = 0
     for doc in documents_list:
-        document = Document(doc[1], doc[0])
+        document = Document(doc, doc_id)
         documents.append(document)
+        doc_id += 1
     return documents
 
 
 """
     Function:       perform_nlp_pipeline
-    Description:    Main nlp pipeline that seperate doc into sentences followed by tokenization of sentences 
-                    and annotating tokens through POS tagger, NER tagger, and depparser. The sentences and annotations are 
+    Description:    Main nlp pipeline that seperate doc into sentences followed by tokenization of sentences
+                    and annotating tokens through POS tagger, NER tagger, and depparser. The sentences and annotations are
                     stored into tables in DB respectively.
-    Arguments:      doc[string] - document text 
+    Arguments:      doc[string] - document text
 """
-
-
-def perform_nlp_pipeline(doc):
-    db = Database()
+def perform_nlp_pipeline(doc, is_remote):
+    db = Database(is_remote)
     tokens = []
-    annotated_text = generate_document(doc.text)
-    sent_segmentations = annotate_document(annotated_text)
-
-    for el in sent_segmentations:
+    start_time = time.time()
+    tokenized_document = tokenize_document(doc.text)
+    annotated_document = annotate_document(tokenized_document)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return
+    for el in annotated_document:
         annotate_sent = Sentence(
             doc.doc_id, el['sentence_text'], el['start_char'], el['end_char'])
 
         # insert sentence to db and save generated uuid in sentence object
-        uuid = db.insert_sentence(annotate_sent)
-        annotate_sent.set_sentence_id(uuid)
+        # db.insert_sentence(annotate_sent)
 
         for token_dict in el['tokens']:
             token = Token(annotate_sent, token_dict)
             tokens.append(token)
     for token in tokens:
-        db.insert_lemma_annotation(token)
-        db.insert_pos_annotation(token)
-        db.insert_depparse_annotation(token)
-        db.insert_ner_annotation(token)
-
+        # db.insert_lemma_annotation(token)
+        # db.insert_pos_annotation(token)
+        # db.insert_depparse_annotation(token)
+        # db.insert_ner_annotation(token)
+        db.insert_annotations(token.to_annotation(db))
+    db.close()
 
 """
     Function:       populate_annotation_tables
     Description:    wrapper function that allocates nlp_pipeline work to multiple cores
     Arguments:      documents_list[list of documents]
 """
-
-
-def populate_annotation_tables(documents):
+def populate_annotation_tables(documents, is_remote):
     t = tqdm(total=len(documents),
-             desc="Annotating documents and Populating sentence segmentations table: ")
-    pool = mp.Pool(mp.cpu_count())
+             desc="Annotating documents: ")
     for doc in documents:
-        pool.apply(perform_nlp_pipeline, args=(doc))
+        perform_nlp_pipeline(doc, is_remote)
         t.update(1)
     t.close()
 
 
-"""
-    Function:       uuid_to_bigint
-    Description:    convert uuid to bigint
-    Arguments:      uuid[string]
-    Return:         bigint resulting from applying hash function on uuid
-"""
-
-
-def uuid_to_bigint(uuid):
-    return int(hashlib.sha256(uuid.encode('utf-8')).hexdigest(), 16) % 100**8
-
-
-def populate_database(DATA_FILE):
+def populate_database(DATA_FILE, db):
     start_time = time.time()
     # Construct connection to Database
-    db = Database()
 
     # read in documents from data file
     documents_list = read_json(DATA_FILE)
@@ -143,5 +126,33 @@ def populate_database(DATA_FILE):
     populate_annotation_tables(documents)
 
     # Close db connection
-    db.close()
     print("--- %s seconds ---" % (time.time() - start_time))
+
+
+def populate_cdc_dataset(is_remote):
+    db = Database(is_remote)
+    documents = get_documents_from_csv(
+        '/Users/jining/Projects/FMP/coreNLP_relational/CDC_search_results.csv')[:1]
+    documents = create_documents(documents)
+    # db.insert_documents(documents)
+    db.close()
+
+    populate_annotation_tables(documents, is_remote)
+
+
+def remove_duplicate_tokens(is_remote):
+
+    db = Database(is_remote)
+    duplicative_sentences = db.find_duplicative_sentences()
+   
+    t = tqdm(total=len(duplicative_sentences), desc="Deleting and Updating duplicate tokens from same sentences in different docs: ")
+   
+    for sent_id in duplicative_sentences:
+
+        token_count = db.count_distinct_tokens(sent_id)
+        new_doc_id = db.generate_consice_doc_id(sent_id)
+
+        for i in range(1, token_count+ 1):
+            db.update_token(new_doc_id, sent_id, i)
+        t.update(1)
+    t.close()
