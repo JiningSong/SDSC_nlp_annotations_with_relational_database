@@ -8,13 +8,13 @@ This software performs a data collection pipeline which analyzes input documents
 5. Run `python main.py` 
 
 ### Database Schema   
-```
 sentence_segmentation Table:    
 1)	doc_id                          
 2)	sent_id                   
 3)	sentence_text                   
 4)	start_char                      
 5)	end_char 
+
 documents Table:
 1)	doc_id
 2)	text 
@@ -33,7 +33,7 @@ annotations table:
 11) upos
 12) xpos
 13) feats
-```
+
 
 ### File Structure
 ```
