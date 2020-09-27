@@ -7,7 +7,8 @@ This software performs a data collection pipeline which analyzes input documents
 4. Go to `db.py`, change the Global variables -- DB configs to your own credentials 
 5. Run `python main.py` 
 
-### Database Schema                                
+### Database Schema   
+```
 `sentence_segmentation` Table:      `documents`  Table:
 1)	doc_id                          1)	doc_id
 2)	sent_id                         2)	text 
@@ -23,12 +24,7 @@ This software performs a data collection pipeline which analyzes input documents
 5)	start_char        12) xpos
 6)	end_char          13) feats
 7)	head_id
-
-
-
-
-
-
+```
 
 ### File Structure
 ```
