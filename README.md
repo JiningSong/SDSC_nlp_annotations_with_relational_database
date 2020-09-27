@@ -9,21 +9,30 @@ This software performs a data collection pipeline which analyzes input documents
 
 ### Database Schema   
 ```
-sentence_segmentation Table:        documents Table:
-1)	doc_id                          1)	doc_id
-2)	sent_id                         2)	text 
+sentence_segmentation Table:    
+1)	doc_id                          
+2)	sent_id                   
 3)	sentence_text                   
 4)	start_char                      
-5)	end_char                        
+5)	end_char 
+documents Table:
+1)	doc_id
+2)	text 
 
 annotations table:
-1)	doc_id            8)	head_text
-2)	sentence_id       9)	dependency_relation
-3)	token_id          10) entity type
-4)	token_text_id     11) upos
-5)	start_char        12) xpos
-6)	end_char          13) feats
+1)	doc_id            
+2)	sentence_id       
+3)	token_id          
+4)	token_text_id     
+5)	start_char        
+6)	end_char          
 7)	head_id
+8)	head_text
+9)	dependency_relation
+10) entity type
+11) upos
+12) xpos
+13) feats
 ```
 
 ### File Structure
