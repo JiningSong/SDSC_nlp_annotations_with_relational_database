@@ -9,14 +9,14 @@ This software performs a data collection pipeline which analyzes input documents
 
 ### Database Schema   
 ```
-`sentence_segmentation` Table:      `documents`  Table:
+sentence_segmentation Table:        documents Table:
 1)	doc_id                          1)	doc_id
 2)	sent_id                         2)	text 
 3)	sentence_text                   
 4)	start_char                      
 5)	end_char                        
 
-`annotations` table:
+annotations table:
 1)	doc_id            8)	head_text
 2)	sentence_id       9)	dependency_relation
 3)	token_id          10) entity type
