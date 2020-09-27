@@ -1,22 +1,31 @@
+# NLP Annotations With Relational Database
+This software performs a data collection pipeline which analyzes input documents using [stanza (A Python NLP Package developed by Stanford NLP Group)](https://stanfordnlp.github.io/stanza/) and store the resulting tokens, annotations, and sentence segmentations into a postgresql relational database. The resulting dataset stored in the database can then be used in further data exploration and information extraction 
 
+### File Structure
 ```
-project
-│   README.md
-│   file001.txt    
+FMP-nlp_annotations_with_relational_database
 │
-└───folder1
-│   │   file011.txt
-│   │   file012.txt
-│   │
-│   └───subfolder1
-│       │   file111.txt
-│       │   file112.txt
-│       │   ...
-│   
-└───folder2
-    │   file021.txt
-    │   file022.txt
+│───README.md
+│───__init__.py   
+│───requirements.txt
+│───main.py ........... Entry for the software. Contains main func
+│
+│───db.py ............. Defines a Database object which contains connection and cursor to a postgresql server.
+│                       The Database object is also responsible executing SQL quries which are defined at the 
+│                       top of the db.py as global variables
+│
+│───models.py ......... Defines several data structures to store the results from nlp pipeline 
+│
+│───nlp_pipelines.py .. Core NLP pipeline which applies tokenizer, pos-tagger, lemma, dependency parser, ner parser, etc.
+│                       onto input documents. A document is seperated into sentences which are then tokenized into indivicual
+│                       tokens. The nlp_pipeline takes a document:string as input and returns a list of Sentences objects which 
+│                       contains a list of Token objects (Sentence and Token are defined in models.py)
+│
+│───utils.py .......... Contains wrapper functions and more complex pipleines which execute the nlp pipeline and stores the 
+                        results to relational database
 ```
+
+
 This pipeline will annotates input documents using StanfordCoreNLP tools. The annotation results are stored in a postgresql relational database. The pipeline results will fill up tables with the following schemas.
 
 Sentence_segmentation Table:        POS_annotations Table:
