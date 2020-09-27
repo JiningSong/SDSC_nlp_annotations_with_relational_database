@@ -1,3 +1,22 @@
+
+```
+project
+│   README.md
+│   file001.txt    
+│
+└───folder1
+│   │   file011.txt
+│   │   file012.txt
+│   │
+│   └───subfolder1
+│       │   file111.txt
+│       │   file112.txt
+│       │   ...
+│   
+└───folder2
+    │   file021.txt
+    │   file022.txt
+```
 This pipeline will annotates input documents using StanfordCoreNLP tools. The annotation results are stored in a postgresql relational database. The pipeline results will fill up tables with the following schemas.
 
 Sentence_segmentation Table:        POS_annotations Table:
