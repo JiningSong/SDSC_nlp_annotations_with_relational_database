@@ -7,6 +7,28 @@ This software performs a data collection pipeline which analyzes input documents
 4. Go to `db.py`, change the Global variables -- DB configs to your own credentials 
 5. Run `python main.py` 
 
+### File Structure
+```
+- README.md
+- __init__.py   
+- requirements.txt
+- main.py              Entry for the software. Contains main func
+
+- db.py                Defines a Database object which contains connection and cursor to a postgresql server.
+                       The Database object is also responsible executing SQL quries which are defined at the 
+                       top of the db.py as global variables
+
+- models.py            Defines several data structures to store the results from nlp pipeline 
+
+- nlp_pipelines.py     Core NLP pipeline which applies tokenizer, pos-tagger, lemma, dependency parser, ner parser, etc.
+                       onto input documents. A document is seperated into sentences which are then tokenized into indivicual
+                       tokens. The nlp_pipeline takes a document:string as input and returns a list of Sentences objects which 
+                       contains a list of Token objects (Sentence and Token are defined in models.py)
+
+- utils.py             Contains wrapper functions and more complex pipleines which execute the nlp pipeline and stores the 
+                       results to relational database
+```
+
 ### Database Schema   
 sentence_segmentation Table:    
 1)	doc_id                          
@@ -33,33 +55,3 @@ annotations table:
 11) upos
 12) xpos
 13) feats
-
-
-### File Structure
-```
-- README.md
-- __init__.py   
-- requirements.txt
-- main.py              Entry for the software. Contains main func
-
-- db.py                Defines a Database object which contains connection and cursor to a postgresql server.
-                       The Database object is also responsible executing SQL quries which are defined at the 
-                       top of the db.py as global variables
-
-- models.py            Defines several data structures to store the results from nlp pipeline 
-
-- nlp_pipelines.py     Core NLP pipeline which applies tokenizer, pos-tagger, lemma, dependency parser, ner parser, etc.
-                       onto input documents. A document is seperated into sentences which are then tokenized into indivicual
-                       tokens. The nlp_pipeline takes a document:string as input and returns a list of Sentences objects which 
-                       contains a list of Token objects (Sentence and Token are defined in models.py)
-
-- utils.py             Contains wrapper functions and more complex pipleines which execute the nlp pipeline and stores the 
-                       results to relational database
-```
-
-
-
-
-
-
-
