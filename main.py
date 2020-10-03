@@ -17,8 +17,6 @@ if __name__ == "__main__":
     populate_cdc_dataset(IS_REMOTE)
     '''
 
-    ''' 
     # Removing duplicate tokens from annotations table
     IS_REMOTE = False
     remove_duplicate_tokens(IS_REMOTE)
-    '''
