@@ -26,7 +26,7 @@ INSERT_NER_ANNOTATIONS = "INSERT INTO ner_annotations VALUES(%s, %s, %s, %s, %s,
 INSERT_VOCABULARY = "INSERT INTO vocabulary VALUES(%s, %s)"
 INSERT_HAN_ARCHIVE = "INSERT INTO han_archive VALUES(%s, %s, %s, %s, %s, %s, %s)"
 INSERT_HAN_ARCHIVE = "INSERT INTO cdc_annotations VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-INSERT_ANNOTATION_TOKEN_QUERY = "INSERT INTO depparse_annotations_1000 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+INSERT_ANNOTATION_TOKEN_QUERY = "INSERT INTO depparse_annotations_10 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
 # SELECT Queries
 SELECT_SENT_ID_FROM_CDC_SENTS = "SELECT sent_id FROM cdc_sentence_segmentation WHERE sentence_text=%s"
@@ -36,13 +36,13 @@ SELECT_FROM_DEPPARSE_ANNOTATIONS = "SELECT * FROM depparse_annotations"
 SELECT_FROM_NER_ANNOTATIONS = "SELECT * FROM ner_annotations WHERE doc_id=%s and sent_id=%s and token_id=%s"
 SELECT_FROM_POS_ANNOTATIONS = "SELECT * FROM pos_annotations WHERE doc_id=%s and sent_id=%s and token_id=%s"
 SELECT_VOCABULARY_ID = "SELECT vocabulary_id FROM vocabulary WHERE vocabulary=%s"
-SELECT_SENT_ID_CONTAINING_DUP_TOKENS = "SELECT depparse_annotations_1000.sent_id FROM depparse_annotations_1000 WHERE dependency_relation='root' GROUP BY sent_id HAVING count(*) > 1"
-SELECT_MAX_TOKEN_ID = "SELECT MAX(token_id) FROM depparse_annotations_1000 WHERE sent_id = %s"
-SELECT_DISTINCT_DOC_IDS_FOR_DUPLICATE_TOKENS = "SELECT DISTINCT doc_id from depparse_annotations_1000 WHERE sent_id = %s and token_id = '1'"
-SELECT_ANNOTATION_TOKEN_QUERY = "SELECT * FROM depparse_annotations_1000 WHERE sent_id = %s and token_id = %s"
+SELECT_SENT_ID_CONTAINING_DUP_TOKENS = "SELECT depparse_annotations_10.sent_id FROM depparse_annotations_10 WHERE dependency_relation='root' GROUP BY sent_id HAVING count(*) > 1"
+SELECT_MAX_TOKEN_ID = "SELECT MAX(token_id) FROM depparse_annotations_10 WHERE sent_id = %s"
+SELECT_DISTINCT_DOC_IDS_FOR_DUPLICATE_TOKENS = "SELECT DISTINCT doc_id from depparse_annotations_10 WHERE sent_id = %s and token_id = '1'"
+SELECT_ANNOTATION_TOKEN_QUERY = "SELECT * FROM depparse_annotations_10 WHERE sent_id = %s and token_id = %s"
 
 # DELETE Queries
-DELETE_DUPLICATE_TOKENS_QUERY = "DELETE FROM depparse_annotations_1000 WHERE sent_id=%s and token_id=%s"
+DELETE_DUPLICATE_TOKENS_QUERY = "DELETE FROM depparse_annotations_10 WHERE sent_id=%s and token_id=%s"
 
 # UPDATE Queries
 UPDATE_QUERY = """ UPDATE pos_annotations
