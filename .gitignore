@@ -3,8 +3,8 @@ __pycache__
 .vscode
 .DS_Store
 .coreNLP_relational_env/
-documents/newspaper.lg.json
-documents/CDC_search_results.csv
+src/newspaper.lg.json
+src/CDC_search_results.csv
 sdsc-nlp_annotation_db
 *.pyc
 _test.py
