@@ -4,3 +4,8 @@ __pycache__
 .DS_Store
 .coreNLP_relational_env/
 documents/
+_test.py
+nlp_pipelines.pyc
+pipelines.pyc
+sdsc-nlp_annotation_db/
+utils.pyc
