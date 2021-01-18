@@ -113,16 +113,6 @@ To get a local copy up and running follow these simple example steps.
     inserter.start_insertion()
  ```
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
-### STEPS TO SETUP AND RUN THE PIPELINE:
-1. Create a new virtualenv: `python3 -m venv {envName}`
-2. Install required packages: `pip install -r requirements.txt`
-3. Go to `main.py`, uncomment any pipeline (populating nlp database, populating cdc dataset, removing duplicate tokens from annotations tbl, etc)
-4. Go to `db.py`, change the Global variables -- DB configs to your own credentials 
-5. Run `python main.py` 
-
 ### File Structure
 ```
 - README.md
