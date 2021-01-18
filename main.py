@@ -1,22 +1,21 @@
-from utils import populate_cdc_dataset, remove_duplicate_tokens
+from pipelines import database_insertion_pipeline
+from configparser import ConfigParser
 from db import *
 
 
 if __name__ == "__main__":
-    '''
-    # Populating nlp database
-    db = Database()
-    DATA_FILE = "/Users/jining/Projects/FMP/coreNLP_relational/documents/newspaper.sm.json"
-    populate_database(DATA_FILE, db)
+
+    # read db_configs (configs for establishing db connection) from config.ini
+    configs = ConfigParser()
+    configs.read("config.ini")
+    db_configs = configs["DATABASECONFIG"]
+    table_names = configs["TABLENAMES"]
+
+    # establish db connection
+    db = Database(db_configs, table_names)
+
+    # insert new data from inserfile into database
+    source_file_path = configs["SOURCEFILE"]["PATH"]
+    database_insertion_pipeline(source_file_path, db)
+
     db.close()
-    '''
-
-    ''' 
-    # Populating cdc dataset
-    IS_REMOTE = True
-    populate_cdc_dataset(IS_REMOTE)
-    '''
-
-    # Removing duplicate tokens from annotations table
-    IS_REMOTE = False
-    remove_duplicate_tokens(IS_REMOTE)
